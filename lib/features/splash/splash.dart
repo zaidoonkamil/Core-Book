@@ -22,6 +22,8 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 1), () {
       Widget? widget;
       bool? onBoarding = CacheHelper.getData(key: 'onBoarding');
+      classId = CacheHelper.getData(key: 'classId') ?? 1;
+      className = CacheHelper.getData(key: 'class') ?? 'السادس العلمي';
       if(CacheHelper.getData(key: 'token') == null){
         token='';
         if (onBoarding == true) {

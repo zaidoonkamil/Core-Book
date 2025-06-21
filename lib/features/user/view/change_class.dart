@@ -1,5 +1,6 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:core_book/core/styles/themes.dart';
+import 'package:core_book/core/widgets/constant.dart';
 import 'package:core_book/features/user/view/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -67,6 +68,8 @@ class ChangeClass extends StatelessWidget {
                                               key: 'classId',
                                               value: cubit.getClassModel[index].id,
                                             ).then((value) {
+                                              className=cubit.getClassModel[index].name;
+                                              classId= cubit.getClassModel[index].id;
                                               navigateAndFinish(context, HomeUser());
                                             });
                                           });

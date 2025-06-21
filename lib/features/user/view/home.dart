@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:core_book/core/widgets/constant.dart';
 import 'package:core_book/features/user/view/ads.dart';
 import 'package:core_book/features/user/view/change_class.dart';
 import 'package:core_book/features/user/view/notifications.dart';
@@ -137,7 +138,7 @@ class HomeUser extends StatelessWidget {
                                   children: [
                                     Image.asset('assets/images/cuida_edit-outline.png'),
                                     Text(
-                                      CacheHelper.getData(key: 'class') ?? 'السادس العلمي',
+                                      className,
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,

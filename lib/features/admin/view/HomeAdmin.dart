@@ -4,6 +4,8 @@ import 'package:core_book/features/admin/view/add_ads.dart';
 import 'package:core_book/features/admin/view/add_notification.dart';
 import 'package:core_book/features/admin/view/add_person.dart';
 import 'package:core_book/features/admin/view/pending_order.dart';
+import 'package:core_book/features/admin/view/teacher_admin.dart';
+import 'package:core_book/features/admin/view/teacher_admin.dart';
 import 'package:core_book/features/user/view/ads.dart';
 import 'package:core_book/features/user/view/profile.dart';
 import 'package:flutter/material.dart';
@@ -13,23 +15,22 @@ import '../../../../core/ navigation/navigation.dart';
 import '../../../../core/styles/themes.dart';
 import '../../../core/network/local/cache_helper.dart';
 import '../../../core/network/remote/dio_helper.dart';
-import '../../user/view/change_class.dart';
+import '../../../core/widgets/custom_text_field.dart';
+import '../../../core/widgets/show_toast.dart';
 import '../cubit/cubit.dart';
 import '../cubit/states.dart';
 import 'package:intl/intl.dart';
 
 import 'ChangeClassAdmin.dart';
 import 'active_order.dart';
+import 'dart:ui' as ui;
 
 class HomeAdmin extends StatelessWidget {
   const HomeAdmin({super.key});
 
   static int currentIndex = 0;
-  static List<String> adsImages = [
-    'assets/images/Rectangle 29.png',
-    'assets/images/Rectangle 29.png',
-    'assets/images/Rectangle 29.png',
-  ];
+  static TextEditingController tittleController = TextEditingController();
+  static TextEditingController colorController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +38,15 @@ class HomeAdmin extends StatelessWidget {
       create: (BuildContext context) => AdminCubit()
         ..getAds(context: context)
         ..getProfile(context: context)
-        //..getSubject(context: context)
+        ..getSubject(context: context)
         ..verifyToken(context: context),
       child: BlocConsumer<AdminCubit,AdminStates>(
-        listener: (context,state){},
+        listener: (context,state){
+          if(state is AddSubjectSuccessState) {
+            tittleController.text='';
+            colorController.text='';
+            }
+        },
         builder: (context,state){
           var cubit=AdminCubit.get(context);
           return SafeArea(
@@ -343,6 +349,258 @@ class HomeAdmin extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 26,),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  const Text(
+                                    ': مواد هذا الصف',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 18,),
+                            ConditionalBuilder(
+                                condition: cubit.getSubjectModel.isNotEmpty,
+                                builder: (c){
+                                  return ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: (cubit.getSubjectModel.length / 2).ceil(),
+                                    itemBuilder: (context, index) {
+                                      int firstItemIndex = index * 2;
+                                      int secondItemIndex = firstItemIndex + 1;
+                                      return Directionality(
+                                        textDirection: ui.TextDirection.rtl,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: GestureDetector(
+                                                  onTap:(){
+                                                   navigateTo(context, TeacherAdmin(subjectId: cubit.getSubjectModel[firstItemIndex].id.toString(),));
+                                                  },
+                                                  child: Container(
+                                                    height: 144,
+                                                    decoration: BoxDecoration(
+                                                      color: Color(int.parse("0xFF${cubit.getSubjectModel[firstItemIndex].color}")),
+                                                      borderRadius: BorderRadius.circular(16),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors.black.withOpacity(0.08),
+                                                          blurRadius: 5,
+                                                          spreadRadius: 1,
+                                                          offset: Offset(0, 3),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                      children: [
+                                                        Text(
+                                                          cubit.getSubjectModel[firstItemIndex].name,
+                                                          style: TextStyle(
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 16,
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                        GestureDetector(
+                                                          onTap:(){
+                                                             cubit.deleteSubject(context: context, idSubject: cubit.getSubjectModel[index].id.toString());
+                                                          },
+                                                          child: Container(
+                                                            width: 50,
+                                                            height: 30,
+                                                            decoration: BoxDecoration(
+                                                              color: Colors.red,
+                                                              borderRadius: BorderRadius.circular(8),
+                                                            ),
+                                                            child: Icon(Icons.delete,color: Colors.white,size: 18,),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(width: 8),
+                                              if (secondItemIndex < cubit.getSubjectModel.length)
+                                                Expanded(
+                                                  child: GestureDetector(
+                                                    onTap:(){
+                                                     navigateTo(context, TeacherAdmin(subjectId: cubit.getSubjectModel[secondItemIndex].id.toString(),));
+                                                    },
+                                                    child: Container(
+                                                      height: 144,
+                                                      decoration: BoxDecoration(
+                                                        color: Color(int.parse("0xFF${cubit.getSubjectModel[secondItemIndex].color}")),
+                                                        borderRadius: BorderRadius.circular(16),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black.withOpacity(0.08),
+                                                            blurRadius: 5,
+                                                            spreadRadius: 1,
+                                                            offset: Offset(0, 3),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                        children: [
+                                                          Text(
+                                                            cubit.getSubjectModel[secondItemIndex].name,
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 16,
+                                                              color: Colors.white,
+                                                            ),
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap:(){
+                                                              cubit.deleteSubject(context: context, idSubject: cubit.getSubjectModel[index].id.toString());
+                                                            },
+                                                            child: Container(
+                                                              width: 50,
+                                                              height: 30,
+                                                              decoration: BoxDecoration(
+                                                                color: Colors.red,
+                                                                borderRadius: BorderRadius.circular(8),
+                                                              ),
+                                                              child: Icon(Icons.delete,color: Colors.white,size: 18,),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                              else
+                                                Expanded(child: Container()),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                fallback: (c)=>Container()
+                            ),
+                            SizedBox(height: 26,),
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              margin: EdgeInsets.symmetric(horizontal: 20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: 8,
+                                    spreadRadius: 2,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                                color: const Color(0xFFF5F5F8),
+
+                              ),
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 26,),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      const Text(
+                                        textAlign: TextAlign.right,
+                                        'اضافة صف جديد',
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 12,),
+                                  CustomTextField(
+                                    controller: tittleController,
+                                    hintText: 'اسم الصف',
+                                    prefixIcon: Icons.title,
+                                  ),
+                                  SizedBox(height: 12,),
+                                  CustomTextField(
+                                    controller: colorController,
+                                    hintText: 'رمز اللون',
+                                    prefixIcon: Icons.color_lens_outlined,
+                                  ),
+                                  SizedBox(height: 12,),
+                                  ConditionalBuilder(
+                                    condition: state is !AddSubjectLoadingState,
+                                    builder: (c){
+                                      return GestureDetector(
+                                        onTap: (){
+                                          if(tittleController.text != '' && colorController.text != ''){
+                                            cubit.addSubject(
+                                              name: tittleController.text.trim(),
+                                              color: colorController.text.trim(),
+                                              context: context,
+                                            );
+                                          }else{
+                                            showToastError(
+                                              text: "رجائا املأ الحقول",
+                                              context: context,
+                                            );
+                                          }
+                                        },
+                                        child: Container(
+                                          width: double.infinity,
+                                          height: 56,
+                                          decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withOpacity(0.2),
+                                                  blurRadius: 10,
+                                                  spreadRadius: 2,
+                                                  offset: const Offset(5, 5),
+                                                ),
+                                              ],
+                                              borderRadius:  BorderRadius.circular(30),
+                                              color: primaryColor
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Container(width: 50,),
+                                              Text('حفظ',
+                                                style: TextStyle(color: Colors.white,fontSize: 18 ),),
+                                              Container(
+                                                margin: EdgeInsets.all(6),
+                                                height: double.maxFinite,
+                                                width: 45,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:  BorderRadius.circular(30),
+                                                    color: Colors.white
+                                                ),
+                                                child: Icon(Icons.arrow_forward_ios_outlined,size: 22,color: primaryColor,),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    fallback: (c)=> CircularProgressIndicator(color: primaryColor,),
+                                  ),
+                                  SizedBox(height: 26,),
+
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 26,),
                           ],
                         )
                     );
@@ -352,7 +610,8 @@ class HomeAdmin extends StatelessWidget {
                     children: [
                       Center(child: CircularProgressIndicator(color: primaryColor,)),
                     ],
-                  )),
+                  ),
+              ),
             ),
           );
         },

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/ navigation/navigation.dart';
 import '../../../../core/styles/themes.dart';
 import '../../../core/network/local/cache_helper.dart';
+import '../../../core/widgets/constant.dart';
 import '../../../core/widgets/show_toast.dart';
 import '../cubit/cubit.dart';
 import '../cubit/states.dart';
@@ -198,7 +199,7 @@ class SubscriptionUser extends StatelessWidget {
                                       children: [
                                         Image.asset('assets/images/fluent_edit-20-regular (1).png'),
                                         Text(
-                                          CacheHelper.getData(key: 'class'),
+                                          className,
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
