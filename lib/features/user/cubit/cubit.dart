@@ -29,6 +29,12 @@ class UserCubit extends Cubit<UserStates> {
     emit(ValidationState());
   }
 
+  int tab=1;
+  void onTabChanged({required int t}){
+    tab=t;
+    emit(ValidationState());
+  }
+
   void verifyToken({required BuildContext context}) {
     if(token == ''){
       return emit(VerifyTokenErrorState());
@@ -101,14 +107,24 @@ class UserCubit extends Cubit<UserStates> {
   }
 
   List<ClassModel> getClassModel = [];
+  List<ClassModel> getCourseModel = [];
   void getClass({required BuildContext context,}) {
     emit(GetClassLoadingState());
     DioHelper.getData(
       url: '/class',
     ).then((value) {
-      getClassModel = (value.data as List)
-          .map((item) => ClassModel.fromJson
-        (item as Map<String, dynamic>)).toList();
+      getClassModel.clear();
+      getCourseModel.clear();
+      List<ClassModel> allClasses = (value.data as List)
+          .map((item) => ClassModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+      for (var classItem in allClasses) {
+        if (classItem.name.startsWith("دورة")) {
+          getCourseModel.add(classItem);
+        } else {
+          getClassModel.add(classItem);
+        }
+      }
       emit(GetClassSuccessState());
     }).catchError((error) {
       if (error is DioError) {

@@ -32,6 +32,7 @@ dependencies:
   top_snackbar_flutter: ^3.2.0
   webview_flutter: ^4.11.0
   onesignal_flutter: ^5.3.0
+  fw_tab_bar: ^0.0.3
 
 
 dev_dependencies:
